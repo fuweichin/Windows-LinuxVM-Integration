@@ -1,6 +1,6 @@
 # Windows-LinuxVM 集成
 
-一系列关于Windows主机与Linux虚拟机的集成的技巧。
+一系列关于Windows主机与Linux虚拟机的集成技巧。
 
 适合读者：Linux虚拟机用户，Linux VPS用户，WSL用户
 
