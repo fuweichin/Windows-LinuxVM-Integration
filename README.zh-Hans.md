@@ -63,7 +63,7 @@ WSL，相对于Linux VM，与Windows集成更加紧密，启动速度更快。�
 | 在主机中访问虚拟机中的文件             | `dir \\wsl$\Ubuntu`              | `dir \\192.168.0.104\Debian`           |
 | 在虚拟机中访问主机中的文件             | `ls /mnc/c`                      | `ls /mnc/c`                            |
 | 在主机中调用虚拟机中的命令             | `ubuntu run ls`                  | `debian run ls`                        |
-| 跨系统命令调用                         | `echo Hello|ubuntu run md5sum -` | `echo Hello|debian run md5sum -`       |
+| 跨系统命令调用                         | `echo Hello\|ubuntu run md5sum -` | `echo Hello\|debian run md5sum -`       |
 | 在虚拟机中调用主机中的命令             | `explorer.exe .`                 | *not yet implemented*                  |
 | 右键菜单项“在此处打开 XXX Linux shell” | `wsl.exe --cd "%V"`              | `debian.bat --cd "%V"`                 |
 
