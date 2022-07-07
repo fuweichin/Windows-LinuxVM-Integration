@@ -1,7 +1,5 @@
 @echo off
 
-@REM Author: Fuwei Chin <fuweichin@gmail.com>
-
 setlocal
 
 set __DIRNAME=%~dp0
@@ -105,7 +103,8 @@ goto main
     goto cdpath_shift_shift
   )
   if [%1]==[run] (
-    goto command_begin
+    set CDOATH=%CD%
+    goto cdpath_transform
   )
   echo Invalid command-line, use '%~n0 --help' to see usage details
   exit /b 1
