@@ -25,7 +25,7 @@
          * [安装SSH客户端](#安装ssh客户端)
          * [安装Terminal管理器](#安装terminal管理器)
          * [配置文件夹共享](#配置文件夹共享)
-         * [安装配置VMLinux CLI](#安装配置vmlinux-cli)
+         * [安装配置vbox-linuxvm-cli](#安装配置vbox-linuxvm-cli)
          * [注册右键菜单项](#注册右键菜单项)
    * [用法](#用法)
       * [使用Linux虚拟机中的Shell](#使用linux虚拟机中的shell)
@@ -57,11 +57,11 @@ WSL，相对于Linux VM，与Windows集成更加紧密，启动速度更快。�
 通过在Windows端和虚拟机Linux端安装系列软件并按一定的方式配置，开发者可以实现类似于WSL那样的Linux虚拟子系统。如下表所示
 
 | 操作 \\ 命令 \\ 虚拟化方式             | WSL子系统 (以Ubuntu为例)         | VirtualBox虚拟机 (以Debian为例)        |
-| -------------------------------------- | -------------------------------- | -------------------------------------- |
+| :------------------------------------- | :------------------------------- | :------------------------------------- |
 | 开机                                   | `ubuntu`                         | `debian`                               |
-| 关机                                   | `wsl --terminate Ubuntu`         | `VBoxManage controlvm Debian poweroff` |
+| 关机                                   | `wsl --terminate Ubuntu`         | `debian --shutdown` |
 | 在主机中访问虚拟机中的文件             | `dir \\wsl$\Ubuntu`              | `dir \\192.168.0.104\Debian`           |
-| 在虚拟机中访问主机中的文件             | `ls /mnc/c`                      | `ls /mnc/c`                            |
+| 在虚拟机中访问主机中的文件             | `ls /mnt/c`                      | `ls /mnt/c`                            |
 | 在主机中调用虚拟机中的命令             | `ubuntu run ls`                  | `debian run ls`                        |
 | 跨系统命令调用                         | `echo Hello\|ubuntu run md5sum -` | `echo Hello\|debian run md5sum -`       |
 | 在虚拟机中调用主机中的命令             | `explorer.exe .`                 | *not yet implemented*                  |
@@ -257,7 +257,7 @@ ssh-copy-id.exe root@192.168.0.104
             {
                 "commandline": "%ProgramFiles%\\Git\\usr\\bin\\ssh.exe root@192.168.0.106",
                 "font": {
-                    "face": "Consolas"
+                    "face": "DejaVu Sans Mono"
                 },
                 "guid": "{3fba3a58-e997-40f2-9ba3-c1b1c4b8ecd0}",
                 "hidden": false,
@@ -269,11 +269,11 @@ ssh-copy-id.exe root@192.168.0.104
 }
 ```
 
-根据所安装发行版，可选地设置图标、字体，光标配色方案，让终端界面看上去更有本土特色。
+根据所安装发行版，可选地设置图标、配色方案、字体和光标，让终端界面看上去更有本土特色。
 
 | 发行版       | 图标                               | 字体                                                         | 光标   | 配色方案                                                  |
-| ------------ | ---------------------------------- | ------------------------------------------------------------ | ------ | --------------------------------------------------------- |
-| Debian       | https://www.debian.org/favicon.ico | [DejaVu Sans Mono](https://www.fontsquirrel.com/fonts/dejavu-sans-mono) | 下划线 |                                                           |
+| :----------- | :--------------------------------- | :----------------------------------------------------------- | :----- | :------------------------------------------------------- |
+| Debian       | https://www.debian.org/favicon.ico | [DejaVu Sans Mono](https://www.fontsquirrel.com/fonts/dejavu-sans-mono) | 实心框 |                                                           |
 | Ubuntu       | https://ubuntu.com/favicon.ico     | [Ubuntu Mono](https://design.ubuntu.com/font/)               | 实心框 | [Ubuntu](https://windowsterminalthemes.dev/?theme=Ubuntu) |
 | elementaryOS | https://elementary.io/favicon.ico  | [Inter](https://rsms.me/inter/download/)                     |        |                                                           |
 
@@ -283,7 +283,7 @@ ssh-copy-id.exe root@192.168.0.104
 
 ![windows-share](./screenshots/virtualbox-share-folders.png)
 
-#### 安装配置VirtualBox LinuxVM CLI
+#### 安装配置vbox-linuxvm-cli
 
 克隆/下载Git仓库[Windows-LinuxVM-Integration](https://github.com/fuweichin/Windows-LinuxVM-Integration)
 
@@ -382,7 +382,7 @@ debian run gh-md-toc --insert --no-backup --hide-footer --skip-header README.md
 
 如果配置了VirtualBox的文件共享，且Linux端安装了GuestAdditions，那么通过路径/mnt/c/可以访问到Windows中的文件。
 
-注意：使用`debian run xxx`时，如果初始目录是在一个VirtualBox未共享该盘给Linux的盘，那么执行命令时cli无法在Linux shell端设置初始目录，这可能会导致脚本出错或者导致文件被写入错误的位置。
+注意：使用`debian run xxx`时，如果当前目录(或--cd参数指定的工作目录)所在的盘未通过VirtualBox共享给虚拟机，那么执行命令时cli无法在Linux shell端设置初始目录，这可能会导致脚本出错或者导致文件被写入错误的位置。
 
 
 
