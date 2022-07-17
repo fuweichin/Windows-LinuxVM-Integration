@@ -25,6 +25,7 @@
          * [安装SSH客户端](#安装ssh客户端)
          * [安装Terminal管理器](#安装terminal管理器)
          * [配置文件夹共享](#配置文件夹共享)
+         * [配置Host-only网络适配器](#配置Host-only网络适配器)
          * [安装配置vbox-linuxvm-cli](#安装配置vbox-linuxvm-cli)
          * [注册右键菜单项](#注册右键菜单项)
    * [用法](#用法)
@@ -77,7 +78,7 @@ WSL，相对于Linux VM，与Windows集成更加紧密，启动速度更快。�
 
 下文中提到的命令行/配置可分为通用设置，个人偏好设置或特定环境下的设置，读者需要自行区分后并酌情调整。
 
-如果某些步骤行不通，或者有更好的实践方式，欢迎读者评论/Submit Issue以指出。
+如果某些步骤行不通或者有更好的实践方式，欢迎读者评论/Submit Issue以指出。
 
 
 
@@ -89,7 +90,7 @@ WSL，相对于Linux VM，与Windows集成更加紧密，启动速度更快。�
 
 下载安装[VirtualBox](https://www.virtualbox.org/wiki/Downloads)及其对应版本的ExtensionPack。
 
-提示：作者发现最新的VirtualBox 6.1.34在存问题导致最新的ubuntu 22.04, debian 13无法完成安装。如读者偶遇，则可尝试安装[稍旧的VirtualBox版本](https://www.virtualbox.org/wiki/Download_Old_Builds)，如6.1.30。
+提示：作者发现最新的VirtualBox 6.1.34在存问题导致最新的Ubuntu 22.04, Debian 11.3无法完成安装。如读者偶遇，则可尝试安装[稍旧的VirtualBox版本](https://www.virtualbox.org/wiki/Download_Old_Builds)，如6.1.30。
 
 #### 创建虚拟机
 
@@ -282,6 +283,43 @@ ssh-copy-id.exe root@192.168.0.104
 更改VirtualBox虚拟机设置，将C:\共享给Linux，自动挂载到/mnt/c，要共享其他盘则依此类推
 
 ![windows-share](./screenshots/virtualbox-share-folders.png)
+
+#### 配置Host-only网络适配器
+
+桥接网卡在没有路由器时不可用，因此你可能要考虑配置VirtualBox虚拟机设置中虚拟网卡类型为Host-only Adapter。VirtualBox安装程序默认会创建一个Host-only Adapter名为"VirtualBox Host-Only Network"，为了要让该适配器的功能跟"vEthernet (WSL)"类似：有NAT子网且能虚拟机能访问因特网，考虑配置一个有Internet访问的适配器，将Internet访问共享给Host-only Adapter。
+
+由于Windows Share Access默认将因特网共享给IPv4地址192.168.137.1，而"VirtualBox Host-Only Network"的默认IPv4地址是192.168.56.1，因此要统一IPv4地址。假设使用一个折衷的IPv4地址如192.168.100.1，设置统一IPv4地址的方法如下：
+
+1. 打开VirtualBox的Host Network Manager窗口，将VirtualBox Host-Only Network的IPv4地址调为192.168.100.1，不启用DHCP服务（以防与之后Share Access的DHCP服务端口冲突）。
+    ![virtualbox-host-network-manager](./screenshots/virtualbox-host-network-manager.png)
+2. 运行regedit打开注册表编辑器，将Share Access的IPv4地址调整为192.168.100.1，同样也不启用DHCP服务。
+    ```ini
+    Windows Registry Editor Version 5.00
+    
+    [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\SharedAccess\Parameters]
+    "ScopeAddress"="192.168.110.1"
+    “StandaloneDhcpAddress”="192.168.100.254"
+    ```
+    ![share-access-scope-address.png](./screenshots/share-access-scope-address.png)
+    
+3. 把能上网的网络适配器(如"Wi-Fi"或"Ethernet")共享给"VirtualBox Host-Only Network"
+
+![share-internet.png](./screenshots/share-internet.png)
+
+默认情况下Internet共享配置在Windows重启之后会丢失，为了能在重启后保留Internet共享配置，需要编辑注册表。
+
+```ini
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\SharedAccess\Parameters]
+EnableRebootPersistConnection=dword:00000001
+```
+
+
+
+参见VirtualBox[网络模式](https://www.virtualbox.org/manual/ch06.html#table-networking-modes)以选择不同场景中最佳的网络模式。
+
+
 
 #### 安装配置vbox-linuxvm-cli
 
